@@ -27,6 +27,7 @@ type Screen = 'signup' | 'otp' | 'login' | 'search' | 'productDetail' | 'home' |
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('signup');
   const [selectedProductId, setSelectedProductId] = useState<string | undefined>();
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handleNavigate = (screen: string, productId?: string) => {
     setCurrentScreen(screen as Screen);
@@ -87,7 +88,7 @@ export default function App() {
   return (
     <>
       <div className="relative">
-        <div className="max-w-[430px] mx-auto bg-white min-h-screen shadow-2xl">
+        <div className="w-full max-w-[430px] mx-auto bg-white min-h-screen shadow-2xl">
           {renderScreen()}
           
           {/* Show bottom nav only on login screen for preview */}
@@ -98,9 +99,39 @@ export default function App() {
           )}
         </div>
 
+        {/* Mobile Menu Overlay */}
+        {showMobileMenu && (
+          <div 
+            className="lg:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setShowMobileMenu(false)}
+          />
+        )}
+
+        {/* Mobile Menu Toggle */}
+        <button
+          onClick={() => setShowMobileMenu(!showMobileMenu)}
+          className="lg:hidden fixed top-4 right-4 bg-white rounded-lg shadow-lg p-3 z-50"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
         {/* Screen Navigation Helper (for demo purposes) */}
-        <div className="fixed top-4 right-4 bg-white rounded-lg shadow-lg p-4 space-y-2 z-50">
-          <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Navigate Screens</p>
+        <div className={`fixed top-4 right-4 bg-white rounded-lg shadow-lg p-4 space-y-2 z-50 max-w-xs lg:max-w-none transition-transform transform ${
+          showMobileMenu ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
+        }`}>
+          <div className="flex justify-between items-center mb-2">
+            <p className="text-xs font-semibold text-gray-500 uppercase">Navigate Screens</p>
+            <button
+              onClick={() => setShowMobileMenu(false)}
+              className="lg:hidden p-1 hover:bg-gray-100 rounded"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
           <button
             onClick={() => handleNavigate('signup')}
             className={`block w-full text-left px-3 py-2 rounded text-sm font-medium transition-colors ${
